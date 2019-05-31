@@ -2,7 +2,7 @@ from Crypto.Cipher import AES
 from os import SEEK_END
 from zlib import crc32
 
-def encrypt(msg,iv):
+def encrypt(msg,iv,key):
     aes = AES.new(key,AES.MODE_ECB)
     m = [msg[i:i+16] for i in range(0,len(msg),16)]
     r = ""
@@ -11,7 +11,7 @@ def encrypt(msg,iv):
         iv = r[-16:]
     return r
 
-def decrypt(msg,iv):
+def decrypt(msg,iv,key):
     aes = AES.new(key,AES.MODE_ECB)
     m = [msg[i:i+16] for i in range(0,len(msg),16)]
     r = ""
@@ -31,7 +31,7 @@ def intToStr(x):
 def xor(a,b):
     return ''.join([chr(ord(x) ^ ord(y)) for x,y in zip(a,b)])
 
-def pngToPng(img1,img2):
+def pngToPng(img1,img2,img3,key):
     with open(img1,"r") as f:
         source = f.read()
     with open(img2,"r") as f:
@@ -43,11 +43,18 @@ def pngToPng(img1,img2):
     iv = xor(aes.decrypt(source[:16]),source[:8]+intToStr(len(source)-16)+"rmll")
     print "IV: " + iv.encode("hex")
 
-    source = decrypt(source,iv)
+    source = decrypt(source,iv,key)
     source += intToStr(crc32(source[12:])%(1<<32)) + target[8:]
     source += "\x00" * (16 - len(source) % 16)
-    with open("out.png","w") as f:
-        f.write(encrypt(source,iv))
+    with open(img3,"w") as f:
+        f.write(encrypt(source,iv,key))
 
-key = "yellow submarine"
-pngToPng("tests/tst1.png","tests/tst2.png")
+def handleFile(src,key,iv,out,action):
+    aes = AES.new(key,AES.MODE_CBC,iv)
+    with open(src,"r") as f:
+        s = f.read()
+    with open(out,"w") as f:
+        if action == "decrypt":
+            f.write(decrypt(s,iv,key))
+        else:
+            f.write(encrypt(s,iv,key))
