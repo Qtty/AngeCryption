@@ -1,3 +1,6 @@
 .vscode/
 tst.py
 angecryption.out
+angecryption.pyc
+menu.pyc
+.tmp/

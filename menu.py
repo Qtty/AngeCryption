@@ -17,7 +17,7 @@ def checkIv(iv):
     return iv
 
 def checkFile(f):
-    fileTypes = ["png"]
+    fileTypes = ["png","pdf"]
 
     try:
         open(f,"r")
@@ -34,7 +34,7 @@ def menu():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--key",type=checkKey,help="the encryption key",required=True)
     parser.add_argument("-s","--source",type=checkFile,help="the source file(the one that shows up by default in the result file)",required=True)
-    parser.add_argument("--action",choices=["encrypt","decrypt","generate"],help="the action to perform:\ngenerate: {}\nencrypt: {}\ndecrypt: {}".format("generate an angecrypted file(flag -t/--target required)","encrypt the result file(flag --iv required)","decrypt the result file(flag --iv required)"),required=True)
+    parser.add_argument("--action",choices=["encrypt","decrypt","png-png","png-pdf"],help="the action to perform:\nencrypt: {}\ndecrypt: {}\nother: {}".format("encrypt the result file(flag --iv required)","decrypt the result file(flag --iv required)","generate an angecrypted file with the corresponding file types(flag -t/--target required)"),required=True)
     parser.add_argument("--iv",type=checkIv,help="the iv generated from the encryption phase")
     parser.add_argument("-t","--target",type=checkFile,help="the target file(the one that's hidden in the result file)")
     parser.add_argument("-o","--output",help="the output/result file (default %(default)s)",default="angecryption.out")
